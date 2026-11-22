@@ -234,8 +234,8 @@
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: 2px;
-            width: 270px;
-            height: 480px;
+            width: 288px;
+            height: 162px;
             margin: 0 auto 10px auto;
             background: rgba(255, 182, 193, 0.4);
             padding: 4px;
@@ -244,10 +244,10 @@
         }
 
         .puzzle-piece {
-            width: 88px;
-            height: 158px;
+            width: 94px;
+            height: 52px;
             background-image: url('photo1.jpg');
-            background-size: 264px 474px;
+            background-size: 282px 156px;
             cursor: grab;
             border-radius: 6px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
@@ -278,8 +278,8 @@
         }
 
         .completed-preview {
-            width: 270px;
-            height: 480px;
+            width: 288px;
+            height: 162px;
             background-image: url('photo1.jpg');
             background-size: cover;
             background-position: center;
@@ -336,11 +336,14 @@
             background: linear-gradient(135deg, #ffffff, #fff0f5);
             width: 90%;
             max-width: 360px;
+            max-height: 82vh;
             padding: 25px 20px;
             border-radius: 25px;
             box-shadow: 0 15px 35px rgba(216, 27, 96, 0.3);
             text-align: center;
             border: 4px solid #ff69b4;
+            display: flex;
+            flex-direction: column;
             transform: scale(0.8);
             animation: popUpWish 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -353,6 +356,7 @@
             color: #d81b60;
             font-size: 1.2rem;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .wish-box-center p {
@@ -361,19 +365,11 @@
             line-height: 1.6;
             white-space: pre-wrap;
             min-height: 80px;
-            max-height: 45vh;
+            max-height: 55vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
             padding-right: 4px;
-        }
-
-        .wish-box-center p::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .wish-box-center p::-webkit-scrollbar-thumb {
-            background: #ffb6c1;
-            border-radius: 10px;
         }
 
         .close-wish-btn {
@@ -386,6 +382,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(216, 27, 96, 0.4);
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -576,8 +573,8 @@
                 piece.classList.add('puzzle-piece');
                 piece.setAttribute('draggable', 'true');
                 
-                const x = (pieceIndex % 3) * 88;
-                const y = Math.floor(pieceIndex / 3) * 158;
+                const x = (pieceIndex % 3) * 94;
+                const y = Math.floor(pieceIndex / 3) * 52;
                 piece.style.backgroundPosition = `-${x}px -${y}px`;
                 piece.dataset.index = currentIndex;
 
@@ -757,7 +754,25 @@
             }, 1500);
         }
 
-        const wishMessage = "ลอยกระทงปีนี้\nเค้าขอให้เธอมีความสุขมากๆนะ\nขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย\nไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร\nก็ขอให้มันผ่านไปได้ด้วยดีนะ\n\nขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ\nและมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต\nขอให้คืนนี้เป็นคืนที่ดีของเธอ\nขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์\nปล่อยความเหนื่อยและเรื่องไม่ดี\nลอยหายไปกับกระทง\n\nขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด\nและมีรอยยิ้มอยู่ตลอดไปนะ\nสุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป\nเค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ\nและสุดท้ายเค้ารักกกกเธออมากๆเลยนะ\nอยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝";
+        const wishMessage = `ลอยกระทงปีนี้
+เค้าขอให้เธอมีความสุขมากๆนะ
+ขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย
+ไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร
+ก็ขอให้มันผ่านไปได้ด้วยดีนะ
+
+ขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ
+และมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต
+ขอให้คืนนี้เป็นคืนที่ดีของเธอ
+ขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์
+ปล่อยความเหนื่อยและเรื่องไม่ดี
+ลอยหายไปกับกระทง
+
+ขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด
+และมีรอยยิ้มอยู่ตลอดไปนะ
+สุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป
+เค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ
+และสุดท้ายเค้ารักกกกเธออมากๆเลยนะ
+อยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝`;
         let isTypingStarted = false;
 
         couplePhoto.addEventListener('click', () => {
