@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ลอยกระทงกับเธอ 🕯️✨</title>
+    <!-- โหลดไลบรารี QRCode -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+- {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Sukhumvit Set', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #050a14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* กรอบมือถือแนวตั้ง 9:16 */
+        .mobile-frame {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            position: relative;
+            background-image: url('พื้นหลัง.png');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border-radius: 20px;
+        }
+
+        .overlay-dark {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10, 15, 30, 0.2), rgba(10, 15, 30, 0.05) 40%, rgba(10, 15, 30, 0.5));
+            pointer-events: none;
+        }
+
+        /* ท้องฟ้าด้านบน 25% (โคมลอย + พลุ) */
+        .sky-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 25%;
+            overflow: hidden; pointer-events: none;
+        }
+
+        .lantern {
+            position: absolute;
+            width: 10px; height: 15px;
+            background: radial-gradient(circle, #fff 20%, #ffaa00 70%, transparent 100%);
+            border-radius: 4px 4px 2px 2px;
+            box-shadow: 0 0 8px #ffaa00;
+            opacity: 0;
+            animation: floatUpSky linear infinite;
+        }
+
+        @keyframes floatUpSky {
+            0% { transform: translateY(120px) scale(0.5); opacity: 0; }
+            30% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-30px) scale(1); opacity: 0; }
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px; height: 4px; border-radius: 50%;
+            box-shadow: 0 0 6px #ff69b4, 0 0 12px #ff1493;
+            animation: explode 2.5s ease-out infinite; opacity: 0;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0.2); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; box-shadow: 0 0 15px #ffb6c1, 0 0 25px #ff69b4; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        /* แม่น้ำด้านล่าง 75% */
+        .river-container {
+            position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 75%;
+            overflow: hidden; pointer-events: none;
+        }
+
+        .water-wave {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at bottom, rgba(40, 100, 180, 0.2) 0%, transparent 70%);
+            animation: wavePulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes wavePulse {
+            0% { opacity: 0.4; transform: scaleY(1); }
+            100% { opacity: 0.8; transform: scaleY(1.05); }
+        }
+
+        /* กระทงเล็กๆ ในแม่น้ำ */
+        .bg-krathong {
+            position: absolute; width: 22px; height: 22px;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            opacity: 0; animation: driftRightRiver linear infinite;
+        }
+
+        @keyframes driftRightRiver {
+            0% { transform: translate(var(--start-x), var(--start-y)) scale(0.6); opacity: 0; }
+            15% { opacity: 0.7; }
+            85% { opacity: 0.7; }
+            100% { transform: translate(var(--end-x), var(--end-y)) scale(1.1); opacity: 0; }
+        }
+
+        /* กระทงหลัก */
+        .main-krathong-wrapper {
+            position: absolute; 
+            bottom: 160px; 
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            transition: bottom 1.2s cubic-bezier(0.25, 1, 0.5, 1); 
+            z-index: 10; 
+            cursor: pointer;
+            width: 170px;
+        }
+
+        .main-krathong-wrapper.floating {
+            bottom: 220px;
+            animation: mainFloat 3.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes mainFloat {
+            0% { transform: translateX(-50%) translateY(0px) rotate(-1deg); }
+            100% { transform: translateX(-50%) translateY(-10px) rotate(1deg); }
+        }
+
+        /* โมเดลธูปเทียน */
+        .stick-container {
+            position: absolute;
+            display: flex; align-items: flex-end; gap: 8px;
+            z-index: 50; touch-action: none; cursor: grab;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sticks-row {
+            display: flex; align-items: flex-end; gap: 8px;
+        }
+
+        .candle-body {
+            width: 9px; height: 26px;
+            background: linear-gradient(to right, #ffc0cb, #ffffff, #ffb6c1);
+            border-radius: 3px 3px 0 0; position: relative;
+            box-shadow: 0 0 6px rgba(255, 182, 193, 0.6);
+        }
+
+        .candle-wick {
+            position: absolute; top: -4px; left: 4px;
+            width: 1px; height: 4px; background: #333;
+        }
+
+        .candle-flame {
+            position: absolute; top: -14px; left: 0px;
+            width: 9px; height: 14px;
+            background: radial-gradient(circle, #fff 10%, #ffeb3b 50%, #ff3d00 100%);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 10px #ffbb00, 0 0 20px #ff3d00;
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+        }
+
+        .incense-group {
+            display: flex; gap: 3px; align-items: flex-end;
+        }
+
+        .incense-stick {
+            width: 2px; height: 28px; background: #7a4b1e; position: relative;
+        }
+
+        .incense-smoke {
+            position: absolute; top: -10px; left: -3px;
+            width: 8px; height: 14px; background: rgba(255, 255, 255, 0.5);
+            filter: blur(2px); border-radius: 50%;
+            animation: smokeRise 2s infinite ease-out;
+        }
+
+        @keyframes smokeRise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
+            100% { transform: translateY(-18px) scale(1.8); opacity: 0; }
+        }
+
+        .drag-hint-fixed {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            z-index: 45;
+            pointer-events: none;
+            animation: pulseText 1.5s infinite;
+        }
+
+        /* ป้ายบอกให้ลองแตะที่กระทง (สำหรับแฟน) */
+        .tap-hint-banner {
+            position: absolute;
+            bottom: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #d81b60;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            z-index: 45;
+            display: none;
+            animation: pulseBanner 1.5s infinite;
+        }
+
+        @keyframes pulseBanner {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.06); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        @keyframes pulseText {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .krathong-img {
+            width: 170px; height: 140px; object-fit: contain;
+            filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.6));
+            margin: 0 auto; display: block;
+        }
+
+        /* แท็บล่างสุดสีขาว-ชมพู */
+        .bottom-panel {
+            position: absolute; bottom: 12px; left: 12px; right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 182, 193, 0.8);
+            border-radius: 16px; padding: 10px 14px;
+            z-index: 20; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: transform 0.4s ease;
+        }
+
+        .panel-title {
+            font-size: 11px; color: #d81b60; text-align: center;
+            margin-bottom: 6px; font-weight: bold;
+        }
+
+        .krathong-selector {
+            display: flex; gap: 8px; overflow-x: auto;
+            padding-bottom: 4px; margin-bottom: 8px; scrollbar-width: none;
+        }
+
+        .krathong-selector::-webkit-scrollbar { display: none; }
+
+        .item-card {
+            flex: 0 0 auto; width: 48px; height: 48px; background: #fff;
+            border: 2px solid #ffd1dc; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        .item-card.active {
+            border-color: #ff69b4; background: #fff0f5; transform: scale(1.05);
+        }
+
+        .item-card img { width: 80%; height: 80%; object-fit: contain; }
+
+        .photos-input-list {
+            display: flex; flex-direction: column; gap: 6px;
+            max-height: 140px; overflow-y: auto; margin-bottom: 8px;
+            padding-right: 4px;
+        }
+
+        .input-row { display: flex; gap: 6px; align-items: center; }
+
+        input[type="text"], textarea {
+            width: 100%; background: #fff; border: 1px solid #ffb6c1;
+            border-radius: 8px; padding: 6px 8px; color: #333;
+            font-size: 11px; outline: none;
+        }
+
+        input[type="file"] { display: none; }
+
+        .upload-btn {
+            background: #fff0f5; border: 1px dashed #ff69b4; color: #d81b60;
+            padding: 5px 8px; border-radius: 8px; font-size: 10px;
+            cursor: pointer; text-align: center; width: 85px; font-weight: bold;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .btn-primary {
+            width: 100%; background: linear-gradient(135deg, #ff69b4, #ff1493);
+            border: none; color: #fff; padding: 9px; border-radius: 10px;
+            font-size: 12px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(255, 20, 147, 0.3);
+        }
+
+        /* ปุ่มลอยกระทงสีขาว */
+        .floating-launch-btn {
+            position: absolute; bottom: 35px; left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            color: #d81b60; border: 2px solid #ff69b4; padding: 12px 28px;
+            border-radius: 25px; font-size: 14px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            z-index: 60; display: none;
+            animation: pulseBtn 1.8s infinite;
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* ป๊อปอัป QR Code ให้แฟนสแกน */
+        .qrcode-modal {
+            position: absolute; inset: 0;
+            background: rgba(5, 10, 20, 0.85);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 180; display: none; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+
+        .qrcode-modal.show { opacity: 1; }
+
+        .qrcode-box {
+            background: #ffffff; padding: 24px; border-radius: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.4); text-align: center;
+            max-width: 85%;
+        }
+
+        .qrcode-box h3 { color: #d81b60; font-size: 16px; margin-bottom: 6px; }
+        .qrcode-box p { color: #666; font-size: 12px; margin-bottom: 16px; }
+        
+        #qrcode { 
+            padding: 10px; 
+            background: #fff; 
+            border-radius: 10px; 
+            border: 2px solid #ffd1dc;
+            display: inline-block;
+        }
+        #qrcode img, #qrcode canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-secondary {
+            margin-top: 16px; background: #fff0f5; color: #d81b60; border: 1px solid #ff69b4;
+            padding: 8px 18px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer;
+        }
+
+        /* หน้าจอคำอธิษฐาน */
+        .memory-overlay {
+            position: absolute; inset: 0;
+            background-image: url('พื้นหลัง.png');
+            background-size: cover; background-position: center;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 100; display: none; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px;
+            opacity: 0; transform: scale(0.92);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .memory-overlay::before {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(10, 15, 30, 0.55); pointer-events: none;
+        }
+
+        .memory-overlay.show {
+            opacity: 1; transform: scale(1);
+        }
+
+        .memory-title {
+            position: relative; color: #ffb6c1; font-size: 18px; font-weight: bold;
+            margin-bottom: 6px; text-shadow: 0 0 12px #ff69b4; z-index: 2;
+        }
+
+        .memory-wish-text {
+            position: relative; color: #fff; font-size: 12px; text-align: center;
+            max-width: 85%; max-height: 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y;
+            white-space: pre-line; margin-bottom: 15px; opacity: 0.95;
+            font-style: normal; transform: none !important;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px; border-radius: 12px; z-index: 2;
+        }
+
+        .polaroid-scatter-container {
+            position: relative; width: 100%; height: 380px;
+            display: flex; justify-content: center; align-items: center; z-index: 2;
+        }
+
+        .polaroid-card {
+            position: absolute; background: #ffffff; padding: 8px 8px 14px 8px;
+            border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 110px; cursor: pointer;
+            opacity: 0;
+            transform: translate(0, 100px) scale(0.2) rotate(0deg);
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: var(--delay);
+        }
+
+        .polaroid-card.show {
+            opacity: 1;
+            transform: translate(var(--dest-x), var(--dest-y)) scale(1) rotate(var(--rot));
+            animation: cardWiggle 2.5s ease-in-out infinite;
+            animation-delay: calc(var(--delay) + 1.2s);
+        }
+
+        @keyframes cardWiggle {
+            0%, 100% { transform: translate(var(--dest-x), var(--dest-y)) scale(1) rotate(var(--rot)); }
+            25% { transform: translate(var(--dest-x), calc(var(--dest-y) - 6px)) scale(1.04) rotate(calc(var(--rot) + 3deg)); }
+            75% { transform: translate(var(--dest-x), calc(var(--dest-y) + 4px)) scale(0.98) rotate(calc(var(--rot) - 3deg)); }
+        }
+
+        .polaroid-card img {
+            width: 100%; height: 90px; object-fit: cover; border-radius: 2px; background: #eee;
+            pointer-events: none;
+        }
+
+        .polaroid-card p {
+            font-size: 14px; color: #d81b60; margin-top: 5px; font-weight: bold;
+            text-align: center; pointer-events: none;
+        }
+
+        /* ป๊อปอัปขยายโพลารอยด์เต็มจอ */
+        .full-photo-modal {
+            position: absolute; inset: 0; 
+            background: rgba(5, 10, 20, 0.65);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 150; display: none; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px;
+            opacity: 0; transform: scale(0.85);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .full-photo-modal.show {
+            opacity: 1; transform: scale(1);
+        }
+
+        .polaroid-frame-large {
+            background: #ffffff; padding: 12px 12px 24px 12px;
+            border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 85%; width: 290px; text-align: center;
+        }
+
+        .polaroid-frame-large img {
+            width: 100%; height: 220px; object-fit: cover; border-radius: 4px; cursor: pointer;
+        }
+
+        .polaroid-frame-large p {
+            color: #222; font-size: 13px; font-weight: bold; margin-top: 10px;
+        }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(255,255,255,0.25); color: #fff; border: none;
+            width: 32px; height: 32px; border-radius: 50%; font-weight: bold;
+            font-size: 16px; cursor: pointer; z-index: 10;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -30px;
+            font-size: 22px;
+            opacity: 0;
+            animation: floatHeartUltraSlow 6.5s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        @keyframes floatHeartUltraSlow {
+            0% { transform: translateY(0) scale(0.3); opacity: 0; }
+            15% { opacity: 0.95; }
+            85% { opacity: 0.8; }
+            100% { transform: translateY(-620px) scale(1.3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- เพลงบรรเลงวนซ้ำอัตโนมัติ (Loop) -->
+    <audio id="bgMusic" src="song.mp3" loop></audio>
+
+    <div class="mobile-frame" id="frame">
+        <div class="overlay-dark"></div>
+
+        <div class="sky-container" id="sky"></div>
+
+        <div class="river-container" id="river">
+            <div class="water-wave"></div>
+        </div>
+
+        <div class="drag-hint-fixed" id="dragHint" style="display: none;">✨ แตะลากธูปเทียนไปปักลงกระทง</div>
+        
+        <!-- ข้อความแนะนำให้ลองแตะที่กระทง (สำหรับแฟน) -->
+        <div class="tap-hint-banner" id="tapHintBanner">✨ ลองแตะที่กระทงดูสิ</div>
+
+        <!-- กระทงหลัก -->
+        <div class="main-krathong-wrapper" id="mainKrathong" onclick="openMemoryModal()">
+            <img id="krathongDisplay" class="krathong-img" alt="กระทง" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3501/3501140.png'">
+        </div>
+
+        <!-- โมเดลธูปเทียน -->
+        <div class="stick-container" id="draggableSticks" style="display: none; bottom: 90px; left: 50%; transform: translateX(-50%);">
+            <div class="sticks-row">
+                <div class="candle-body">
+                    <div class="candle-wick"></div>
+                    <div class="candle-flame"></div>
+                </div>
+                <div class="incense-group">
+                    <div class="incense-stick"><div class="incense-smoke"></div></div>
+                    <div class="incense-stick"><div class="incense-smoke"></div></div>
+                    <div class="incense-stick"><div class="incense-smoke"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ปุ่มลอยกระทงสีขาว -->
+        <button class="floating-launch-btn" id="launchBtn" onclick="launchKrathong()">กดเพื่อลอยกระทง ✨</button>
+
+        <!-- แท็บควบคุมล่างสุด -->
+        <div class="bottom-panel" id="bottomPanel">
+            
+            <div id="step1Content">
+                <div class="panel-title">เลือกกระทงสวยๆ 🌸</div>
+                <div class="krathong-selector" id="selector"></div>
+                <button class="btn-primary" onclick="goToStep(2)">ถัดไป: ใส่รูปความทรงจำ (5 รูป) 📸</button>
+            </div>
+
+            <div id="step2Content" style="display: none;">
+                <div class="panel-title">อัปโหลดรูปภาพความทรงจำ 5 รูป 💕</div>
+                <div class="photos-input-list" id="photosInputList"></div>
+                <button class="btn-primary" onclick="goToStep(3)">ถัดไป: คำอธิษฐาน ✨</button>
+            </div>
+
+            <div id="step3Content" style="display: none;">
+                <div class="panel-title">เขียนคำอธิษฐานของเราสองคน 💌</div>
+                <div class="form-group">
+                    <textarea id="wishInput" rows="2" placeholder="พิมพ์คำอธิษฐานที่นี่..."></textarea>
+                </div>
+                <button class="btn-primary" onclick="finishWish()">พิมพ์คำอธิษฐานเสร็จสิ้น 🕯️</button>
+            </div>
+
+        </div>
+
+        <!-- ป๊อปอัป QR Code -->
+        <div class="qrcode-modal" id="qrModal">
+            <div class="qrcode-box">
+                <h3>ให้แฟนสแกน QR Code นี้ 💕</h3>
+                <p>เพื่อเปิดดูกระทงและคำอธิษฐานของเราพร้อมกัน</p>
+                <div id="qrcode"></div>
+                <button class="btn-secondary" onclick="closeQRModal()">ดูหน้ากระทงที่ลอยแล้ว ✨</button>
+            </div>
+        </div>
+
+        <!-- หน้าจอคำอธิษฐานเมื่อกดกระทง -->
+        <div class="memory-overlay" id="memoryOverlay">
+            <button class="close-btn" onclick="closeMemoryModal()">✕</button>
+            <div class="memory-title">คำอธิษฐาน ❤️</div>
+            <div class="memory-wish-text" id="displayWishText">"ขอให้เรามีความสุข รักกันนานๆ..."</div>
+            
+            <div class="polaroid-scatter-container" id="scatterContainer"></div>
+        </div>
+
+        <!-- ป๊อปอัปขยายโพลารอยด์เต็มจอ -->
+        <div class="full-photo-modal" id="fullPhotoModal" onclick="closeFullPhoto()">
+            <button class="close-btn" onclick="closeFullPhoto()">✕</button>
+            <div class="polaroid-frame-large" onclick="event.stopPropagation()">
+                <img id="fullImg" src="" alt="รูปโพลารอยด์" onclick="closeFullPhoto()">
+                <p id="fullCaption"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let selectedKrathongIndex = 1;
+        const photoDataList = Array(5).fill(null).map(() => ({ src: '', caption: '' }));
+        const defaultWishText = `ลอยกระทงปีนี้
+เค้าขอให้เธอมีความสุขมากๆนะ
+ขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย
+ไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร
+ก็ขอให้มะนผ่านไปได้ด้วยดีนะ
+
+ขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ
+และมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต
+ขอให้คืนนี้เป็นคืนที่ดีของเธอ
+ขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์
+ปล่อยความเหนื่อยและเรื่องไม่ดี
+ลอยหายไปกับกระทง
+
+ขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด
+และมีรอยยิ้มอยู่ตลอดไปนะ
+สุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป
+เค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ
+และสุดท้ายเค้ารักกกกเธออมากๆเลยนะ
+อยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝`;
+
+        // เล่นเพลงทันทีที่เปิดเว็บ (พยายาม Bypass Autoplay Policy ของเบราว์เซอร์)
+        window.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('wishInput').value = defaultWishText;
+
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 1.0;
+            
+            // ฟังก์ชันสั่งเล่นเพลง
+            const playAudio = () => {
+                audio.play().catch(err => {
+                    console.log("Autoplay blocked, waiting for user interaction:", err);
+                });
+            };
+
+            playAudio();
+            // เผื่อกรณีเบราว์เซอร์บล็อก ให้เล่นทันทีที่มีการแตะหน้าจอครั้งแรก
+            document.body.addEventListener('click', () => {
+                if (audio.paused) playAudio();
+            }, { once: true });
+
+            // ตรวจสอบว่าเปิดผ่าน QR Code หรือไม่ (ฝั่งแฟน)
+            const urlParams = new URLSearchParams(window.location.search);
+            const kid = urlParams.get('kid');
+            
+            if (kid) {
+                try {
+                    const savedData = await getFromDB(kid);
+                    if (savedData) {
+                        selectedKrathongIndex = savedData.k || 1;
+                        document.getElementById('krathongDisplay').src = `กระทง${selectedKrathongIndex}.png`;
+                        document.getElementById('wishInput').value = savedData.w || defaultWishText;
+                        
+                        if (savedData.p && Array.isArray(savedData.p)) {
+                            savedData.p.forEach((item, idx) => {
+                                if (photoDataList[idx]) {
+                                    photoDataList[idx].src = item.s || '';
+                                    photoDataList[idx].caption = item.c || '';
+                                }
+                            });
+                        }
+                    } else {
+                        document.getElementById('krathongDisplay').src = `กระทง1.png`;
+                    }
+
+                    // ซ่อนเมนูสร้าง ปักธูปเทียนอัตโนมัติ และแสดงกระทงลอย
+                    document.getElementById('bottomPanel').style.display = 'none';
+                    const mainKrathong = document.getElementById('mainKrathong');
+                    const dragEl = document.getElementById('draggableSticks');
+                    mainKrathong.appendChild(dragEl);
+                    dragEl.style.display = 'flex';
+                    dragEl.style.top = '28px';
+                    dragEl.style.left = '50%';
+                    dragEl.style.transform = 'translateX(-50%)';
+
+                    mainKrathong.classList.add('floating');
+
+                    // แสดงข้อความแนะนำให้ลองแตะที่กระทง (เฉพาะฝั่งแฟน)
+                    document.getElementById('tapHintBanner').style.display = 'block';
+
+                } catch (e) {
+                    console.error("Load DB failed", e);
+                }
+            } else {
+                document.getElementById('krathongDisplay').src = `กระทง1.png`;
+            }
+        });
+
+        // ระบบฐานข้อมูล IndexedDB
+        const dbName = "KrathongLoveDB";
+        const storeName = "krathongStore";
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName, { keyPath: "id" });
+                    }
+                };
+            });
+        }
+
+        async function saveToDB(id, data) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, "readwrite");
+                const store = transaction.objectStore(storeName);
+                const request = store.put({ id: id, payload: data });
+                request.onsuccess = () => resolve(true);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getFromDB(id) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, "readonly");
+                const store = transaction.objectStore(storeName);
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result ? request.result.payload : null);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        const sky = document.getElementById('sky');
+        for (let i = 0; i < 10; i++) {
+            const lantern = document.createElement('div');
+            lantern.className = 'lantern';
+            lantern.style.left = `${Math.random() * 90}%`;
+            lantern.style.animationDuration = `${6 + Math.random() * 6}s`;
+            lantern.style.animationDelay = `${Math.random() * 4}s`;
+            sky.appendChild(lantern);
+        }
+
+        for (let i = 0; i < 3; i++) {
+            const fw = document.createElement('div');
+            fw.className = 'firework';
+            fw.style.left = `${15 + Math.random() * 70}%`;
+            fw.style.top = `${5 + Math.random() * 15}%`;
+            fw.style.animationDuration = `${2 + Math.random() * 2}s`;
+            fw.style.animationDelay = `${Math.random() * 3}s`;
+            sky.appendChild(fw);
+        }
+
+        const river = document.getElementById('river');
+        for (let i = 0; i < 6; i++) {
+            const bgKrathong = document.createElement('div');
+            bgKrathong.className = 'bg-krathong';
+            bgKrathong.style.backgroundImage = `url('กระทง${(i % 9) + 1}.png')`;
+            
+            const startX = -60 - (i * 35);
+            const startY = 60 + Math.random() * 280;
+            const endX = startX + 480 + Math.random() * 50;
+            const endY = startY + (Math.random() * 40 - 20);
+
+            bgKrathong.style.setProperty('--start-x', `${startX}px`);
+            bgKrathong.style.setProperty('--start-y', `${startY}px`);
+            bgKrathong.style.setProperty('--end-x', `${endX}px`);
+            bgKrathong.style.setProperty('--end-y', `${endY}px`);
+            
+            bgKrathong.style.animationDuration = `${11 + Math.random() * 5}s`;
+            bgKrathong.style.animationDelay = `${i * 2.2}s`;
+            river.appendChild(bgKrathong);
+        }
+
+        const selector = document.getElementById('selector');
+        for (let i = 1; i <= 9; i++) {
+            const card = document.createElement('div');
+            card.className = `item-card ${i === 1 ? 'active' : ''}`;
+            card.onclick = () => selectKrathong(i, card);
+            const img = document.createElement('img');
+            img.src = `กระทง${i}.png`;
+            img.onerror = () => { img.src = 'https://cdn-icons-png.flaticon.com/512/3501/3501140.png'; };
+            card.appendChild(img); selector.appendChild(card);
+        }
+
+        function selectKrathong(index, cardEl) {
+            document.querySelectorAll('.item-card').forEach(el => el.classList.remove('active'));
+            cardEl.classList.add('active');
+            selectedKrathongIndex = index;
+            document.getElementById('krathongDisplay').src = `กระทง${index}.png`;
+        }
+
+        const photosInputList = document.getElementById('photosInputList');
+        for (let i = 0; i < 5; i++) {
+            const row = document.createElement('div');
+            row.className = 'input-row';
+            row.innerHTML = `
+                <label class="upload-btn" id="upBtn${i}">📷 รูปที่ ${i + 1}
+                    <input type="file" accept="image/*" onchange="uploadPhoto(event, ${i})">
+                </label>
+                <input type="text" placeholder="ข้อความใต้รูปที่ ${i + 1}" oninput="photoDataList[${i}].caption = this.value">
+            `;
+            photosInputList.appendChild(row);
+        }
+
+        function uploadPhoto(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoDataList[index].src = e.target.result;
+                    document.getElementById(`upBtn${index}`).style.background = '#e8f5e9';
+                    document.getElementById(`upBtn${index}`).style.color = '#2e7d32';
+                    document.getElementById(`upBtn${index}`).innerText = `✓ รูปที่ ${index + 1}`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function goToStep(step) {
+            document.getElementById('step1Content').style.display = step === 1 ? 'block' : 'none';
+            document.getElementById('step2Content').style.display = step === 2 ? 'block' : 'none';
+            document.getElementById('step3Content').style.display = step === 3 ? 'block' : 'none';
+        }
+
+        function finishWish() {
+            document.getElementById('bottomPanel').style.transform = 'translateY(150%)';
+            document.getElementById('draggableSticks').style.display = 'flex';
+            document.getElementById('dragHint').style.display = 'block';
+            initDragSticks();
+        }
+
+        function initDragSticks() {
+            const dragEl = document.getElementById('draggableSticks');
+            let isDragging = false;
+
+            function startDrag(e) { isDragging = true; e.preventDefault(); }
+
+            function moveDrag(e) {
+                if (!isDragging) return;
+                const touch = e.touches ? e.touches[0] : e;
+                const frameRect = document.getElementById('frame').getBoundingClientRect();
+                
+                let newX = touch.clientX - frameRect.left;
+                let newY = touch.clientY - frameRect.top;
+
+                dragEl.style.left = `${newX}px`;
+                dragEl.style.top = `${newY}px`;
+                dragEl.style.bottom = 'auto';
+                dragEl.style.transform = 'translate(-50%, -50%)';
+            }
+
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const mainKrathong = document.getElementById('mainKrathong');
+                mainKrathong.appendChild(dragEl);
+                dragEl.style.top = '28px';
+                dragEl.style.left = '50%';
+                dragEl.style.transform = 'translateX(-50%)';
+
+                document.getElementById('dragHint').style.display = 'none';
+                document.getElementById('launchBtn').style.display = 'block';
+            }
+
+            dragEl.addEventListener('touchstart', startDrag);
+            document.addEventListener('touchmove', moveDrag);
+            document.addEventListener('touchend', endDrag);
+
+            dragEl.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', moveDrag);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        async function launchKrathong() {
+            document.getElementById('launchBtn').style.display = 'none';
+            document.getElementById('mainKrathong').classList.add('floating');
+
+            const kid = 'k_' + Math.random().toString(36).substring(2, 9);
+            const krathongData = {
+                k: selectedKrathongIndex,
+                w: document.getElementById('wishInput').value,
+                p: photoDataList.map(item => ({ s: item.src, c: item.caption }))
+            };
+
+            await saveToDB(kid, krathongData);
+            const shareUrl = `${window.location.origin}${window.location.pathname}?kid=${kid}`;
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            new QRCode(qrContainer, {
+                text: shareUrl,
+                width: 170,
+                height: 170,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            const modal = document.getElementById('qrModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeQRModal() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 400);
+        }
+
+        function openMemoryModal() {
+            if (document.getElementById('mainKrathong').classList.contains('floating')) {
+                // ซ่อนป้ายแนะนำเมื่อแฟนเริ่มกดดูแล้ว
+                document.getElementById('tapHintBanner').style.display = 'none';
+
+                const wish = document.getElementById('wishInput').value;
+                document.getElementById('displayWishText').innerText = wish.trim() !== "" ? wish : defaultWishText;
+                
+                const scatterContainer = document.getElementById('scatterContainer');
+                scatterContainer.innerHTML = '';
+
+                const scatterPositions = [
+                    { x: -115, y: -70, r: -8, delay: 0.1 },
+                    { x: 110, y: -80, r: 12, delay: 0.25 },
+                    { x: -120, y: 50, r: 6, delay: 0.4 },
+                    { x: 125, y: 60, r: -14, delay: 0.55 },
+                    { x: 0, y: -15, r: 3, delay: 0.7 }
+                ];
+
+                photoDataList.forEach((data, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'polaroid-card';
+                    const pos = scatterPositions[i];
+                    
+                    card.style.setProperty('--dest-x', `${pos.x}px`);
+                    card.style.setProperty('--dest-y', `${pos.y}px`);
+                    card.style.setProperty('--rot', `${pos.r}deg`);
+                    card.style.setProperty('--delay', `${pos.delay}s`);
+                    
+                    card.onclick = (e) => { 
+                        e.stopPropagation(); 
+                        openFullPhoto(data); 
+                    };
+
+                    const imgSrc = data.src || 'https://via.placeholder.com/150/ffb6c1/ffffff?text=Love';
+                    card.innerHTML = `<img src="${imgSrc}"><p>?</p>`;
+                    scatterContainer.appendChild(card);
+
+                    setTimeout(() => card.classList.add('show'), 50);
+                });
+
+                const overlay = document.getElementById('memoryOverlay');
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('show'), 10);
+            }
+        }
+
+        function closeMemoryModal() {
+            const overlay = document.getElementById('memoryOverlay');
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.style.display = 'none', 600);
+        }
+
+        function openFullPhoto(data) {
+            const imgSrc = data.src || 'https://via.placeholder.com/300/ffb6c1/ffffff?text=Love';
+            const capText = data.caption || 'ความทรงจำของเรา';
+            
+            document.getElementById('fullImg').src = imgSrc;
+            document.getElementById('fullCaption').innerText = capText;
+            
+            const modal = document.getElementById('fullPhotoModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+
+            createFloatingHearts();
+        }
+
+        function closeFullPhoto() {
+            const modal = document.getElementById('fullPhotoModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 400);
+        }
+
+        function createFloatingHearts() {
+            const emojis = ['💖', '✨', '💕', '🤍' , '💗'];
+            const frame = document.getElementById('frame');
+            for (let i = 0; i < 8; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                heart.style.left = `${15 + Math.random() * 70}%`;
+                heart.style.animationDuration = `${6 + Math.random() * 2}s`;
+                heart.style.animationDelay = `${Math.random() * 0.6}s`;
+                frame.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }
+        }
+    </script>
+</body>
+</html>
