@@ -336,14 +336,11 @@
             background: linear-gradient(135deg, #ffffff, #fff0f5);
             width: 90%;
             max-width: 360px;
-            max-height: 82vh;
             padding: 25px 20px;
             border-radius: 25px;
             box-shadow: 0 15px 35px rgba(216, 27, 96, 0.3);
             text-align: center;
             border: 4px solid #ff69b4;
-            display: flex;
-            flex-direction: column;
             transform: scale(0.8);
             animation: popUpWish 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -356,7 +353,6 @@
             color: #d81b60;
             font-size: 1.2rem;
             margin-bottom: 10px;
-            flex-shrink: 0;
         }
 
         .wish-box-center p {
@@ -365,11 +361,19 @@
             line-height: 1.6;
             white-space: pre-wrap;
             min-height: 80px;
-            max-height: 55vh;
+            max-height: 45vh;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
             padding-right: 4px;
+        }
+
+        .wish-box-center p::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .wish-box-center p::-webkit-scrollbar-thumb {
+            background: #ffb6c1;
+            border-radius: 10px;
         }
 
         .close-wish-btn {
@@ -382,7 +386,6 @@
             font-size: 0.9rem;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(216, 27, 96, 0.4);
-            flex-shrink: 0;
         }
     </style>
 </head>
@@ -754,25 +757,7 @@
             }, 1500);
         }
 
-        const wishMessage = `ลอยกระทงปีนี้
-เค้าขอให้เธอมีความสุขมากๆนะ
-ขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย
-ไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร
-ก็ขอให้มะนผ่านไปได้ด้วยดีนะ
-
-ขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ
-และมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต
-ขอให้คืนนี้เป็นคืนที่ดีของเธอ
-ขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์
-ปล่อยความเหนื่อยและเรื่องไม่ดี
-ลอยหายไปกับกระทง
-
-ขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด
-และมีรอยยิ้มอยู่ตลอดไปนะ
-สุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป
-เค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ
-และสุดท้ายเค้ารักกกกเธออมากๆเลยนะ
-อยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝`;
+        const wishMessage = "ลอยกระทงปีนี้\nเค้าขอให้เธอมีความสุขมากๆนะ\nขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย\nไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร\nก็ขอให้มันผ่านไปได้ด้วยดีนะ\n\nขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ\nและมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต\nขอให้คืนนี้เป็นคืนที่ดีของเธอ\nขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์\nปล่อยความเหนื่อยและเรื่องไม่ดี\nลอยหายไปกับกระทง\n\nขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด\nและมีรอยยิ้มอยู่ตลอดไปนะ\nสุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป\nเค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ\nและสุดท้ายเค้ารักกกกเธออมากๆเลยนะ\nอยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝";
         let isTypingStarted = false;
 
         couplePhoto.addEventListener('click', () => {
