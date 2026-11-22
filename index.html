@@ -168,7 +168,6 @@
             50% { transform: translateX(-50%) scale(1.06); }
         }
 
-        /* ข้อความล่างสุดเปลี่ยนเป็นสีขาวเรียบร้อยแล้ว */
         .bottom-hint-text {
             position: absolute;
             bottom: 25px;
@@ -208,7 +207,7 @@
 
         .puzzle-box {
             background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255, 240, 245, 0.95));
-            padding: 15px;
+            padding: 18px 15px;
             border-radius: 25px;
             text-align: center;
             width: 100%;
@@ -220,22 +219,23 @@
         .puzzle-box h2 {
             font-size: 1.2rem;
             color: #d81b60;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .puzzle-box p {
             font-size: 0.8rem;
             color: #c71585;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
 
+        /* ปรับสัดส่วนจิ๊กซอว์เป็น 16:9 (3x3 ช่องละ 96x54px = 288x162px) */
         .puzzle-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: 2px;
-            width: 270px;
-            height: 480px;
+            width: 300px;
+            height: 174px;
             margin: 0 auto 10px auto;
             background: rgba(255, 182, 193, 0.4);
             padding: 4px;
@@ -244,17 +244,17 @@
         }
 
         .puzzle-piece {
-            width: 88px;
-            height: 158px;
+            width: 96px;
+            height: 54px;
             background-image: url('photo1.jpg');
-            background-size: 264px 474px;
+            background-size: 288px 162px;
             cursor: grab;
             border-radius: 6px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
             touch-action: none;
             transition: transform 0.1s, box-shadow 0.1s;
             position: relative;
-            border: 2px dashed rgba(255, 255, 255, 0.6);
+            border: 1.5px dashed rgba(255, 255, 255, 0.6);
         }
 
         .puzzle-piece:active {
@@ -265,21 +265,22 @@
 
         .puzzle-piece.dragging {
             opacity: 0.85;
-            border: 3px dashed #ff1493;
+            border: 2px dashed #ff1493;
             box-shadow: 0 0 15px #ff69b4;
             transform: scale(1.06);
             z-index: 20;
         }
 
         .puzzle-piece.drag-over {
-            border: 3px solid #ff1493;
+            border: 2px solid #ff1493;
             background-color: rgba(255, 105, 180, 0.4);
             box-shadow: inset 0 0 15px #ff1493;
         }
 
+        /* ปรับภาพตอนต่อเสร็จเป็น 16:9 เช่นกัน */
         .completed-preview {
-            width: 270px;
-            height: 480px;
+            width: 288px;
+            height: 162px;
             background-image: url('photo1.jpg');
             background-size: cover;
             background-position: center;
@@ -394,7 +395,6 @@
             </div>
         </div>
 
-        <!-- ข้อความล่างสุด (สีขาว) -->
         <div class="bottom-hint-text" id="bottomHintText">แตะหน้าจอเพื่อเริ่มเพลง</div>
 
         <div class="modal-overlay" id="puzzleModal">
@@ -424,7 +424,6 @@
         const bgMusic = document.getElementById('bgMusic');
         const bottomHintText = document.getElementById('bottomHintText');
         
-        // แสดงข้อความ "แตะหน้าจอเพื่อเริ่มเพลง" ไว้ที่ด้านล่างสุดตอนเริ่มเปิดเว็บ
         bottomHintText.style.display = 'block';
 
         let isMusicStarted = false;
@@ -563,8 +562,9 @@
                 piece.classList.add('puzzle-piece');
                 piece.setAttribute('draggable', 'true');
                 
-                const x = (pieceIndex % 3) * 88;
-                const y = Math.floor(pieceIndex / 3) * 158;
+                // คำนวณพิกัดภาพ 16:9 (กว้างช่องละ 96px, สูงช่องละ 54px)
+                const x = (pieceIndex % 3) * 96;
+                const y = Math.floor(pieceIndex / 3) * 54;
                 piece.style.backgroundPosition = `-${x}px -${y}px`;
                 piece.dataset.index = currentIndex;
 
@@ -665,7 +665,6 @@
                 questionMark.style.display = 'none';
                 couplePhoto.style.display = 'block';
                 
-                // เปลี่ยนข้อความเป็น "ลองแตะที่รูปของเราดูสิ" (สีขาว) ไว้ที่ด้านล่างสุด
                 bottomHintText.innerText = "ลองแตะที่รูปของเราดูสิ";
                 bottomHintText.style.display = 'block';
 
@@ -744,27 +743,29 @@
             }, 1500);
         }
 
-        const wishMessage = "ลอยกระทงปีนี้\n
-เค้าขอให้เธอมีความสุขมากๆนะ\n
-ขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย\n
-ไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร\n
-ก็ขอให้มะนผ่านไปได้ด้วยดีนะ\n\n
-ขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้\nำ
-และมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต\n
-ขอให้คืนนี้เป็นคืนที่ดีของเธอ\n
-ขอให้คำอธิฐานเป็นจริงปล่อยความทุกข์\n
-ปล่อยความเหนื่อยและเรื่องไม่ดี\n
-ลอยหายไปกับกระทง\n\n
-ขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด\n
-และมีรอยยิ้มอยู่ตลอดไปนะ\n
-สุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป\n
-เค้าจะคอยซัพพอตคอยเป็นกำลังใจข้างๆเธอ\n
-และสุดท้ายเค้ารักกกกเธออมากๆเลยนะ\n
-อยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝";
+        const wishMessage = `ลอยกระทงปีนี้
+เค้าขอให้เธอมีความสุขมากๆนะ
+ขอให้สุขภาพแข็งแรง ไม่เจ็บไม่ป่วยย
+ไม่ว่าจะต้องเหนื่อยกับงานหรือเจอเรื่องอะไร
+ก็ขอให้มันผ่านไปได้ด้วยดีนะ
+
+ขอให้เรื่องที่ไม่สบายใจลอยหายไปกับสายน้ำ
+และมีแต่สิ่งดีๆและคนใจดีๆเข้ามาในชีวิต
+ขอให้คืนนี้เป็นคืนที่ดีของเธอ
+ขอให้คำอธิษฐานเป็นจริง ปล่อยความทุกข์
+ปล่อยความเหนื่อยและเรื่องไม่ดี
+ลอยหายไปกับกระทง
+
+ขอให้ทุกวันของเธอเป็นวันที่ดีที่สุด
+และมีรอยยิ้มอยู่ตลอดไปนะ
+สุดท้ายแล้วเค้าขอให้เธอมีความสุขตลอดไป
+เค้าจะคอยซัพพอร์ตคอยเป็นกำลังใจข้างๆเธอ
+และสุดท้ายเค้ารักกกกเธออมากๆเลยนะ
+อยู่กับเค้าคนนี้ไปนานๆเลยนะ🪷🥰💝`;
         let isTypingStarted = false;
 
         couplePhoto.addEventListener('click', () => {
-            bottomHintText.style.display = 'none'; // ซ่อนข้อความเมื่อกดที่รูปแล้ว
+            bottomHintText.style.display = 'none';
             wishModal.style.display = 'flex';
             if (!isTypingStarted) {
                 isTypingStarted = true;
